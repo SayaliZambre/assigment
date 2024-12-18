@@ -1,0 +1,36 @@
+// prisma/schema.prisma
+
+datasource db {
+  provider = "postgresql" // Change this to your preferred provider (e.g., MySQL)
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  username String   @unique
+  email    String   @unique
+  password String
+  wallet   Wallet?
+  transactions Transaction[]
+}
+
+model Wallet {
+  id      Int      @id @default(autoincrement())
+  balance Float    @default(0)
+  userId  Int      @unique
+  user    User     @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+}
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  walletId  Int
+  type      String
+  amount    Float
+  category  String
+  wallet    Wallet   @relation(fields: [walletId], references: [id])
+}
